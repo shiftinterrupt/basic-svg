@@ -1,0 +1,16 @@
+export const PI = Math.PI;
+export const TRIANGLE = 'triangle';
+export const SQUARE = 'square';
+export const PENTAGON = 'pentagon';
+export const HEXAGON = 'hexagon';
+export const SEPTAGON = 'septagon';
+export const OCTAGON = 'octagon';
+export const ORIENT_RADIUS = 'orient_radius';
+export const ORIENT_APOTHEM = 'orient_apothem';
+export const LINEAR = 'linear';
+export const SIN = 'sin';
+export const NS = 'http://www.w3.org/2000/svg';
+export const SVG = 'svg';
+export const POLYGON = 'polygon';
+export const CIRCLE = 'circle';
+export const RECT = 'rect';

@@ -1,0 +1,37 @@
+{
+  "name": "basic-svg",
+  "version": "1.0.0",
+  "description": "Basic SVG",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anomaaly/basic-svg.git"
+  },
+  "keywords": [
+    "svg",
+    "generators",
+    "coroutines",
+    "trig"
+  ],
+  "author": "anomaaly",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anomaaly/basic-svg/issues"
+  },
+  "homepage": "https://github.com/anomaaly/basic-svg#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "ramda": "^0.25.0",
+    "webpack": "^3.11.0"
+  }
+}
