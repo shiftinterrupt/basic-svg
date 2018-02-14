@@ -14654,10 +14654,7 @@ var _svg = __webpack_require__(213);
 
 document.addEventListener('DOMContentLoaded', function () {
 
-	var svg = (0, _svg.Svg)('body').attrs({
-		width: '1700',
-		height: '800'
-	});
+	var svg = (0, _svg.Svg)('body');
 
 	var circle = svg.append('circle', {
 		radius: 25,

@@ -10,10 +10,7 @@ import {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-	const svg = Svg('body').attrs({
-		width: '1700',
-		height: '800'
-	});
+	const svg = Svg('body');
 
 	const circle = svg.append('circle', {
 		radius: 25,
