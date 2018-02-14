@@ -1,12 +1,6 @@
+import Svg from './svg';
 import { PI, LINEAR, SIN } from './constants';
-import { Polygon } from './polygon';
-import {
-	Svg,
-	animate,
-	rotate,
-	translate,
-	oscillate
-} from './svg';
+import { animate, rotate, translate, oscillate } from './animate';
 
 document.addEventListener('DOMContentLoaded', () => {
 
