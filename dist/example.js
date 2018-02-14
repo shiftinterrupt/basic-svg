@@ -5926,7 +5926,6 @@ var _polygon = __webpack_require__(113);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-//import R from 'ramda';
 var R = __webpack_require__(114);
 
 var _sin = Math.sin,
@@ -5944,6 +5943,17 @@ var createElement = function createElement(ns, name) {
 var element = function element(o) {
 	return o.el;
 };
+var localName = function localName(el) {
+	var parts = el.localName.split(':');
+	return parts[parts.length - 1];
+};
+var attr = function attr(svg, _attr) {
+	return element(svg).getAttribute(_attr);
+};
+var data = R.prop(['data']);
+var getPoints = R.compose(_polygon.getPoints, data);
+var getSides = R.compose(_polygon.getSides, data);
+var getCentroid = R.compose(_polygon.getCentroid, data);
 
 var BasicSvg = function () {
 	function BasicSvg(name) {
@@ -5987,7 +5997,10 @@ var BasicSvg = function () {
 	}, {
 		key: 'points',
 		value: function points(_points) {
+
+			this.data.points = _points;
 			element(this).setAttribute('points', stringifyPoints(_points));
+
 			return this;
 		}
 	}, {
@@ -5997,7 +6010,7 @@ var BasicSvg = function () {
 			    x = _ref2[0],
 			    y = _ref2[1];
 
-			this.attrs({
+			return this.attrs({
 				'cx': x,
 				'cy': y
 			});
@@ -6018,6 +6031,8 @@ var BasicSvg = function () {
 
 				switch (sub) {
 					case _constants.RECT:
+						svgObj = new BasicSvg(_constants.RECT);
+						element(this).append(element(svgObj));
 						break;
 
 					case _constants.CIRCLE:
@@ -6060,6 +6075,18 @@ var BasicSvg = function () {
 
 	return BasicSvg;
 }();
+
+var getOrigin = function getOrigin(svg) {
+
+	switch (R.compose(localName, element)(svg)) {
+		case _constants.CIRCLE:
+			return [attr(svg, 'cx'), attr(svg, 'cy')];
+		case _constants.RECT:
+			return [attr(svg, 'x') + attr(svg, 'width') / 2, attr(svg, 'y') + attr(svg, 'height') / 2];
+		case _constants.POLYGON:
+			return getCentroid(svg);
+	}
+};
 
 var Svg = exports.Svg = function Svg(selector) {
 
@@ -6159,7 +6186,7 @@ var animate = exports.animate = function animate(svg, deltaGetters, duration) {
 		return getter(svg, duration, interval);
 	});
 
-	var points = (0, _polygon.getPoints)(data) || [data.origin];
+	var points = getPoints(svg) || [getOrigin(svg)];
 
 	var it = iter(svg, points, deltaGetters, frames, duration, interval);
 
@@ -6185,45 +6212,44 @@ var oscillate = exports.oscillate = function oscillate() {
 
 
 	return (/*#__PURE__*/regeneratorRuntime.mark(function _callee(svg, duration, interval) {
-			var data, sides, frames, framesPerCycle, thetaDelta, i, j;
+			var sides, frames, framesPerCycle, thetaDelta, i, j;
 			return regeneratorRuntime.wrap(function _callee$(_context2) {
 				while (1) {
 					switch (_context2.prev = _context2.next) {
 						case 0:
-							data = svg.data;
-							sides = (0, _polygon.getSides)(data);
+							sides = getSides(svg);
 							frames = duration / interval;
 							framesPerCycle = frames / cycles;
 							thetaDelta = 2 * _constants.PI / framesPerCycle;
 							i = -1;
 
-						case 6:
+						case 5:
 							if (!(++i < frames)) {
-								_context2.next = 16;
+								_context2.next = 15;
 								break;
 							}
 
 							j = 0;
 
-						case 8:
+						case 7:
 							if (!(j < sides)) {
-								_context2.next = 14;
+								_context2.next = 13;
 								break;
 							}
 
-							_context2.next = 11;
+							_context2.next = 10;
 							return [amplitude[0] * (_sin((i + 1) * thetaDelta) - _sin(i * thetaDelta)), amplitude[1] * (-cos((i + 1) * thetaDelta) + cos(i * thetaDelta))];
 
-						case 11:
+						case 10:
 							j++;
-							_context2.next = 8;
+							_context2.next = 7;
 							break;
 
-						case 14:
-							_context2.next = 6;
+						case 13:
+							_context2.next = 5;
 							break;
 
-						case 16:
+						case 15:
 						case 'end':
 							return _context2.stop();
 					}
@@ -6240,66 +6266,65 @@ var translate = exports.translate = function translate() {
 
 	var gen = {
 		linear: /*#__PURE__*/regeneratorRuntime.mark(function linear(svg, duration, interval) {
-			var data, sides, frames, delta, i, j;
+			var sides, frames, delta, i, j;
 			return regeneratorRuntime.wrap(function linear$(_context3) {
 				while (1) {
 					switch (_context3.prev = _context3.next) {
 						case 0:
-							data = svg.data;
-							sides = (0, _polygon.getSides)(data);
+							sides = getSides(svg);
 							frames = duration / interval;
 							delta = (0, _point.pointQuot)(distance, frames);
 							i = -1;
 
 							if (!sides) {
-								_context3.next = 18;
+								_context3.next = 17;
 								break;
 							}
 
-						case 6:
+						case 5:
 							if (!(++i < frames)) {
-								_context3.next = 16;
+								_context3.next = 15;
 								break;
 							}
 
 							j = 0;
 
-						case 8:
+						case 7:
 							if (!(j < sides)) {
-								_context3.next = 14;
+								_context3.next = 13;
 								break;
 							}
 
-							_context3.next = 11;
+							_context3.next = 10;
 							return delta;
 
-						case 11:
+						case 10:
 							j++;
-							_context3.next = 8;
+							_context3.next = 7;
 							break;
 
-						case 14:
-							_context3.next = 6;
+						case 13:
+							_context3.next = 5;
 							break;
 
-						case 16:
-							_context3.next = 23;
+						case 15:
+							_context3.next = 22;
 							break;
 
-						case 18:
+						case 17:
 							if (!(++i < frames)) {
-								_context3.next = 23;
+								_context3.next = 22;
 								break;
 							}
 
-							_context3.next = 21;
+							_context3.next = 20;
 							return delta;
 
-						case 21:
-							_context3.next = 18;
+						case 20:
+							_context3.next = 17;
 							break;
 
-						case 23:
+						case 22:
 						case 'end':
 							return _context3.stop();
 					}
@@ -6307,13 +6332,12 @@ var translate = exports.translate = function translate() {
 			}, linear, this);
 		}),
 		sin: /*#__PURE__*/regeneratorRuntime.mark(function sin(svg, duration, interval) {
-			var data, sides, frames, thetaDelta, frameDelta, i, j;
+			var sides, frames, thetaDelta, frameDelta, i, j;
 			return regeneratorRuntime.wrap(function sin$(_context4) {
 				while (1) {
 					switch (_context4.prev = _context4.next) {
 						case 0:
-							data = svg.data;
-							sides = (0, _polygon.getSides)(data);
+							sides = getSides(svg);
 							frames = duration / interval;
 							thetaDelta = _constants.PI / (2 * frames);
 
@@ -6328,54 +6352,54 @@ var translate = exports.translate = function translate() {
 							i = -1;
 
 							if (!sides) {
-								_context4.next = 19;
+								_context4.next = 18;
 								break;
 							}
 
-						case 7:
+						case 6:
 							if (!(++i < frames)) {
-								_context4.next = 17;
+								_context4.next = 16;
 								break;
 							}
 
 							j = 0;
 
-						case 9:
+						case 8:
 							if (!(j < sides)) {
-								_context4.next = 15;
+								_context4.next = 14;
 								break;
 							}
 
-							_context4.next = 12;
+							_context4.next = 11;
 							return frameDelta(i, distance, thetaDelta);
 
-						case 12:
+						case 11:
 							j++;
-							_context4.next = 9;
+							_context4.next = 8;
 							break;
 
-						case 15:
-							_context4.next = 7;
+						case 14:
+							_context4.next = 6;
 							break;
 
-						case 17:
-							_context4.next = 24;
+						case 16:
+							_context4.next = 23;
 							break;
 
-						case 19:
+						case 18:
 							if (!(++i < frames)) {
-								_context4.next = 24;
+								_context4.next = 23;
 								break;
 							}
 
-							_context4.next = 22;
+							_context4.next = 21;
 							return frameDelta(i, distance, thetaDelta);
 
-						case 22:
-							_context4.next = 19;
+						case 21:
+							_context4.next = 18;
 							break;
 
-						case 24:
+						case 23:
 						case 'end':
 							return _context4.stop();
 					}
@@ -6389,30 +6413,29 @@ var translate = exports.translate = function translate() {
 var rotate = exports.rotate = function rotate(theta) {
 
 	return (/*#__PURE__*/regeneratorRuntime.mark(function _callee2(svg, duration, interval) {
-			var data, points, sides, centroid, frames, delta, i, j, point, radius, t0, tc, tp;
+			var points, sides, centroid, frames, delta, i, j, point, radius, t0, tc, tp;
 			return regeneratorRuntime.wrap(function _callee2$(_context5) {
 				while (1) {
 					switch (_context5.prev = _context5.next) {
 						case 0:
-							data = svg.data;
-							points = (0, _polygon.getPoints)(data);
-							sides = (0, _polygon.getSides)(data);
-							centroid = (0, _polygon.getCentroid)(data);
+							points = getPoints(svg);
+							sides = getSides(svg);
+							centroid = getCentroid(svg);
 							frames = duration / interval;
 							delta = theta / frames;
 							i = -1;
 
-						case 7:
+						case 6:
 							if (!(++i < frames)) {
-								_context5.next = 22;
+								_context5.next = 21;
 								break;
 							}
 
 							j = 0;
 
-						case 9:
+						case 8:
 							if (!(j < sides)) {
-								_context5.next = 20;
+								_context5.next = 19;
 								break;
 							}
 
@@ -6421,19 +6444,19 @@ var rotate = exports.rotate = function rotate(theta) {
 							t0 = R.compose(_polygon.getTheta, _point.pointDiff)(centroid, point);
 							tc = t0 + (i + 1) * delta;
 							tp = t0 + i * delta;
-							_context5.next = 17;
+							_context5.next = 16;
 							return [radius * (cos(tc) - cos(tp)), radius * (_sin(tc) - _sin(tp))];
 
-						case 17:
+						case 16:
 							j++;
-							_context5.next = 9;
+							_context5.next = 8;
 							break;
 
-						case 20:
-							_context5.next = 7;
+						case 19:
+							_context5.next = 6;
 							break;
 
-						case 22:
+						case 21:
 						case 'end':
 							return _context5.stop();
 					}

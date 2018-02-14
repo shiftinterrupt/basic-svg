@@ -1,4 +1,3 @@
-//import R from 'ramda';
 const R = require('ramda');
 
 import {
@@ -30,9 +29,9 @@ import {
 	RegularPolygon,
 	getTheta,
 	exteriorAngle,
-	getPoints,
-	getSides,
-	getCentroid,
+	getSides as getPolygonSides,
+	getCentroid as getPolygonCentroid,
+	getPoints as getPolygonPoints,
 	polygonSides
 } from './polygon';
 
@@ -40,6 +39,15 @@ const { sin, cos, tan, asin, acos, atan, sqrt } = Math;
 
 const createElement = (ns, name) => document.createElementNS(ns, name);
 const element = o => o.el;
+const localName = el => {
+	const parts = el.localName.split(':');
+	return parts[parts.length - 1];
+}
+const attr = (svg, attr) => element(svg).getAttribute(attr);
+const data = R.prop(['data']);
+const getPoints = R.compose(getPolygonPoints, data);
+const getSides = R.compose(getPolygonSides, data);
+const getCentroid = R.compose(getPolygonCentroid, data);
 
 class BasicSvg {
 
@@ -68,12 +76,15 @@ class BasicSvg {
 	}
 
 	points(points) {
+
+		this.data.points = points;
 		element(this).setAttribute('points', stringifyPoints(points));
+
 		return this;
 	}
 
 	origin([ x, y ]) {
-		this.attrs({
+		return this.attrs({
 			'cx': x,
 			'cy': y
 		});
@@ -92,6 +103,8 @@ class BasicSvg {
 
 			switch(sub) {
 				case RECT:
+					svgObj = new BasicSvg(RECT);
+					element(this).append(element(svgObj));
 					break;
 
 				case CIRCLE:
@@ -119,7 +132,7 @@ class BasicSvg {
 						R.assoc('sides', polygonSides[sub], def)
 					);
 					svgObj = new BasicSvg(POLYGON);
-					svgObj.points(getPoints(poly)).data(poly);;
+					svgObj.points(getPolygonPoints(poly)).data(poly);;
 
 					element(this).append(element(svgObj));
 
@@ -132,6 +145,21 @@ class BasicSvg {
 		element(this).append(element(sub));
 
 		return sub;
+	}
+}
+
+const getOrigin = svg => {
+	
+	switch(R.compose(localName, element)(svg)) {
+		case CIRCLE:
+			return [ attr(svg,'cx'), attr(svg,'cy') ];
+		case RECT:
+			return [
+				attr(svg,'x') + attr(svg,'width') / 2,
+				attr(svg,'y') + attr(svg,'height') / 2
+			];
+		case POLYGON:
+			return getCentroid(svg);
 	}
 }
 
@@ -177,7 +205,7 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 
 	deltaGetters = deltaGetters.map(getter => getter(svg, duration, interval));
 
-	let points = getPoints(data) || [ data.origin ];
+	let points = getPoints(svg) || [ getOrigin(svg) ];
 
 	const it = iter(svg, points, deltaGetters, frames, duration, interval);
 
@@ -202,8 +230,7 @@ export const oscillate = (amplitude = [ [ 0, 0 ], [ 0, 0 ] ], cycles = [ 1, 1 ])
 
 	return function* (svg, duration, interval) {
 
-		const { data } = svg;
-		const sides = getSides(data);
+		const sides = getSides(svg);
 		const frames = duration / interval;
 		const framesPerCycle = frames / cycles;
 		const thetaDelta = 2 * PI / framesPerCycle;
@@ -224,8 +251,7 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => {
 
 	const gen = {
 		*linear (svg, duration, interval) {
-			const { data } = svg;
-			const sides = getSides(data);
+			const sides = getSides(svg);
 			const frames = duration / interval;
 			const delta = pointQuot(distance, frames);
 
@@ -243,8 +269,7 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => {
 			}
 		},
 		*sin (svg, duration, interval) {
-			const { data } = svg;
-			const sides = getSides(data);
+			const sides = getSides(svg);
 			const frames = duration / interval;
 			const thetaDelta = PI / (2 * frames);
 
@@ -275,10 +300,9 @@ export const rotate = theta => {
 
 	return function* (svg, duration, interval) {
 
-		const { data } = svg;
-		const points = getPoints(data);
-		const sides = getSides(data);
-		const centroid = getCentroid(data);
+		const points = getPoints(svg);
+		const sides = getSides(svg);
+		const centroid = getCentroid(svg);
 		const frames = duration / interval;
 		const delta = theta / frames;
 
