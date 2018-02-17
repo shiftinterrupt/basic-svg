@@ -1,4 +1,4 @@
-const R = require('ramda');
+const { range } = require('ramda');
 
 import {
 	PI,
@@ -83,7 +83,7 @@ export const RegularPolygon = ({
 
 	radius = radius || derive('radius');
 
-	return Polygon(R.range(0, sides).map(i => [
+	return Polygon(range(0, sides).map(i => [
 		origin[0] + radius * cos((i * 2 * theta) + rotate),
 		origin[1] + radius * sin((i * 2 * theta) + rotate)
 	]));

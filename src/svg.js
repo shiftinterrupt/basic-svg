@@ -1,5 +1,3 @@
-const R = require('ramda');
-
 import { SVG } from './constants';
 import BasicSvg from './BasicSvg';
 import { element } from './utils';

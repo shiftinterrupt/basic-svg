@@ -1,4 +1,4 @@
-const R = require('ramda');
+const { compose } = require('ramda');
 
 import { PI } from './constants';
 import { getPoints, getSides, getCentroid } from './utils';
@@ -145,7 +145,7 @@ export const rotate = theta => {
 			for (let j = 0; j < sides; j++) {
 				const point = points[j];
 				const radius = segmentLength(point, centroid);
-				const t0 = R.compose(getTheta, pointDiff)(centroid, point);
+				const t0 = compose(getTheta, pointDiff)(centroid, point);
 				const tc = t0 + (i + 1) * delta;
 				const tp = t0 + i * delta;
 				

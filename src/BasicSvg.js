@@ -1,4 +1,4 @@
-const R = require('ramda');
+const { keys, assoc } = require('ramda');
 
 import {
 	NS,
@@ -33,7 +33,7 @@ export default class BasicSvg {
 	}
 
 	attrs(obj) {
-		R.keys(obj).map(key => this.attr(key, obj[key]));
+		keys(obj).map(key => this.attr(key, obj[key]));
 		return this;
 	}
 
@@ -43,7 +43,7 @@ export default class BasicSvg {
 	}
 
 	styles(obj) {
-		R.keys(obj).map(key => this.style(key, obj[key]));
+		keys(obj).map(key => this.style(key, obj[key]));
 		return this;
 	}
 
@@ -101,7 +101,7 @@ export default class BasicSvg {
 				case OCTAGON:
 
 					const poly = RegularPolygon(
-						R.assoc('sides', polygonSides[sub], def)
+						assoc('sides', polygonSides[sub], def)
 					);
 					svgObj = new BasicSvg(POLYGON);
 					svgObj.points(getPolygonPoints(poly)).data(poly);;
