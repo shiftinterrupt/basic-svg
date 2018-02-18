@@ -60,7 +60,7 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 	});
 };
 
-export const oscillate = (amplitude = [ [ 0, 0 ], [ 0, 0 ] ], cycles = [ 1, 1 ]) => {
+export const oscillate = (amplitude = [ 0, 0 ], cycles = [ 1, 1 ]) => {
 
 	return function* (svg, duration, interval) {
 
