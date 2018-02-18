@@ -5,7 +5,7 @@ A minimal SVG library in JavaScript supporting animations.
 
 Demo
 ------
-A live [demo](https://anomaaly.github.io/basic-svg/) 
+[https://anomaaly.github.io/basic-svg/](https://anomaaly.github.io/basic-svg/) 
 
 Usage
 -------
