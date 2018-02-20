@@ -1,7 +1,7 @@
 const { compose } = require('ramda');
 
 import { PI } from './constants';
-import { getPoints, getSides, getCentroid } from './utils';
+import { getOrigin, getPoints, getSides, getCentroid } from './utils';
 import { getTheta } from './polygon';
 import {
 	pointSum,

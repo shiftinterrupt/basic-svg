@@ -1,4 +1,5 @@
 const { keys, assoc } = require('ramda');
+import { localName, isRect, isCircle, isPolygon } from './utils';
 
 import {
 	NS,
@@ -56,10 +57,17 @@ export default class BasicSvg {
 	}
 
 	origin([ x, y ]) {
-		return this.attrs({
-			'cx': x,
-			'cy': y
-		});
+		if (isRect(this)) {
+			this.attrs({
+				x,
+				y
+			});
+		} else if (isCircle(this)) {
+			this.attrs({
+				cx: x,
+				cy: y
+			});
+		}
 	}
 
 	data(d) {
@@ -76,6 +84,7 @@ export default class BasicSvg {
 			switch(sub) {
 				case RECT:
 					svgObj = new BasicSvg(RECT);
+					svgObj.data = def;
 					element(this).append(element(svgObj));
 					break;
 

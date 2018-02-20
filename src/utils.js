@@ -1,5 +1,6 @@
-const { prop, compose } = require('ramda');
+const { prop, compose, curry, equals } = require('ramda');
 
+import { RECT, CIRCLE, POLYGON } from './constants';
 import {
 	getPoints as getPolygonPoints,
 	getSides as getPolygonSides,
@@ -12,8 +13,8 @@ export const stringifyPoints = arr => join(' ')(arr.map(stringifyPoint));
 export const createElement = (ns, name) => document.createElementNS(ns, name);
 export const element = prop(['el']);
 
-export const localName = el => {
-	const parts = el.localName.split(':');
+export const localName = svg => {
+	const parts = element(svg).localName.split(':');
 	return parts[parts.length - 1];
 }
 export const attr = (svg, attr) => element(svg).getAttribute(attr);
@@ -22,16 +23,22 @@ export const getPoints = compose(getPolygonPoints, data);
 export const getSides = compose(getPolygonSides, data);
 export const getCentroid = compose(getPolygonCentroid, data);
 
+export const isShape = shape => compose(equals(shape), localName);
+export const isRect = isShape(RECT);
+export const isCircle = isShape(CIRCLE);
+export const isPolygon = isShape(POLYGON);
+
+const int = v => parseInt(v, 10);
+
 export const getOrigin = svg => {
 	
-	switch(compose(localName, element)(svg)) {
+	switch(localName(svg)) {
 		case CIRCLE:
-			return [ attr(svg,'cx'), attr(svg,'cy') ];
+			return [ int(attr(svg,'cx')), int(attr(svg,'cy')) ];
+
 		case RECT:
-			return [
-				attr(svg,'x') + attr(svg,'width') / 2,
-				attr(svg,'y') + attr(svg,'height') / 2
-			];
+			return [ int(attr(svg,'x')), int(attr(svg,'y')) ];
+
 		case POLYGON:
 			return getCentroid(svg);
 	}
