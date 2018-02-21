@@ -29,13 +29,28 @@ export default class BasicSvg {
 	}
 
 	attr(key, val) {
+		if (val === undefined) {
+			return element(this).getAttribute(key);
+		}
 		element(this).setAttribute(key, val);
 		return this;
 	}
 
 	attrs(obj) {
-		keys(obj).map(key => this.attr(key, obj[key]));
-		return this;
+		if (obj) {
+			keys(obj).map(key => this.attr(key, obj[key]));
+			return this;
+		}
+
+		const attrsObj = {};
+		const attrs = element(this).attributes;
+
+		for (let i = 0, numAttrs = attrs.length, attr; i < numAttrs; i++) {
+			attr = attrs[i];
+			attrsObj[ attr.nodeName ] = attr.nodeValue;
+		}
+
+		return attrsObj;
 	}
 
 	style(key, val) {
@@ -56,17 +71,22 @@ export default class BasicSvg {
 		return this;
 	}
 
-	origin([ x, y ]) {
+	origin(point) {
 		if (isRect(this)) {
-			this.attrs({
-				x,
-				y
-			});
+			if (point === undefined) {
+				return [ this.attr('x'), this.attr('y') ];
+			}
+			return this.attrs({ x: point[0], y: point[1] });
+
 		} else if (isCircle(this)) {
-			this.attrs({
-				cx: x,
-				cy: y
-			});
+			if (point === undefined) {
+				return [ this.attr('cx'), this.attr('cy') ];
+			}
+			return this.attrs({ cx: point[0], cy: point[1] });
+
+		} else if (isPolygon(this)) {
+			// Todo
+			return this;
 		}
 	}
 

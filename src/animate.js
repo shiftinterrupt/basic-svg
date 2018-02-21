@@ -1,7 +1,13 @@
 const { compose } = require('ramda');
 
 import { PI } from './constants';
-import { getOrigin, getPoints, getSides, getCentroid } from './utils';
+import {
+	getOrigin,
+	getPoints,
+	getSides,
+	getCentroid,
+	isPolygon
+} from './utils';
 import { getTheta } from './polygon';
 import {
 	pointSum,
@@ -18,17 +24,17 @@ const applyDeltas = (points, deltaGetters) => points.map(p => pointSum(p, combin
 
 const iter = function* (svg, points, deltaGetters, frames, duration, interval) {
 
-	if (points.length == 1) {
+	if (isPolygon(svg)) {
 		while (frames-- > 0) {
 			points = yield points;
 			points = applyDeltas(points, deltaGetters);
-			svg.origin(points[0]);
+			svg.points(points);
 		}
 	} else {
 		while (frames-- > 0) {
 			points = yield points;
 			points = applyDeltas(points, deltaGetters);
-			svg.points(points);
+			svg.origin(points[0]);
 		}
 	}
 };
@@ -51,8 +57,7 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 
 			if (next.done) {
 				clearInterval(id);
-				resolve();
-				return
+				return resolve();
 			};
 			points = next.value;
 

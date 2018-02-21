@@ -8528,8 +8528,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _utils = __webpack_require__(112);
@@ -8554,6 +8552,9 @@ var BasicSvg = function () {
 	_createClass(BasicSvg, [{
 		key: 'attr',
 		value: function attr(key, val) {
+			if (val === undefined) {
+				return (0, _utils.element)(this).getAttribute(key);
+			}
 			(0, _utils.element)(this).setAttribute(key, val);
 			return this;
 		}
@@ -8562,10 +8563,22 @@ var BasicSvg = function () {
 		value: function attrs(obj) {
 			var _this = this;
 
-			keys(obj).map(function (key) {
-				return _this.attr(key, obj[key]);
-			});
-			return this;
+			if (obj) {
+				keys(obj).map(function (key) {
+					return _this.attr(key, obj[key]);
+				});
+				return this;
+			}
+
+			var attrsObj = {};
+			var attrs = (0, _utils.element)(this).attributes;
+
+			for (var i = 0, numAttrs = attrs.length, attr; i < numAttrs; i++) {
+				attr = attrs[i];
+				attrsObj[attr.nodeName] = attr.nodeValue;
+			}
+
+			return attrsObj;
 		}
 	}, {
 		key: 'style',
@@ -8594,21 +8607,20 @@ var BasicSvg = function () {
 		}
 	}, {
 		key: 'origin',
-		value: function origin(_ref) {
-			var _ref2 = _slicedToArray(_ref, 2),
-			    x = _ref2[0],
-			    y = _ref2[1];
-
+		value: function origin(point) {
 			if ((0, _utils.isRect)(this)) {
-				this.attrs({
-					x: x,
-					y: y
-				});
+				if (point === undefined) {
+					return [this.attr('x'), this.attr('y')];
+				}
+				return this.attrs({ x: point[0], y: point[1] });
 			} else if ((0, _utils.isCircle)(this)) {
-				this.attrs({
-					cx: x,
-					cy: y
-				});
+				if (point === undefined) {
+					return [this.attr('cx'), this.attr('cy')];
+				}
+				return this.attrs({ cx: point[0], cy: point[1] });
+			} else if ((0, _utils.isPolygon)(this)) {
+				// Todo
+				return this;
 			}
 		}
 	}, {

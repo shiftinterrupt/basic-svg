@@ -4,7 +4,11 @@ import { animate, rotate, translate, oscillate } from './animate';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-	const svg = Svg('body');
+	const svg = Svg('body').styles({
+		position: 'absolute',
+		width: '100%',
+		height: '100%'
+	});
 
 	const circle = svg.append('circle', {
 		radius: 25,
