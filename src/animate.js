@@ -22,19 +22,19 @@ const sumNext = (delta, getter) => pointSum(delta, getter.next().value);
 const combineDeltas = deltaGetters => deltaGetters.reduce(sumNext, [ 0, 0 ]);
 const applyDeltas = (points, deltaGetters) => points.map(p => pointSum(p, combineDeltas(deltaGetters)));
 
-const iter = function* (svg, points, deltaGetters, frames, duration, interval) {
-
-	if (isPolygon(svg)) {
-		while (frames-- > 0) {
-			points = yield points;
-			points = applyDeltas(points, deltaGetters);
-			svg.points(points);
-		}
-	} else {
+const iterators = {
+	*standard (svg, points, deltaGetters, frames, duration, interval) {
 		while (frames-- > 0) {
 			points = yield points;
 			points = applyDeltas(points, deltaGetters);
 			svg.origin(points[0]);
+		}
+	},
+	*polygon (svg, points, deltaGetters, frames, duration, interval) {
+		while (frames-- > 0) {
+			points = yield points;
+			points = applyDeltas(points, deltaGetters);
+			svg.points(points);
 		}
 	}
 };
@@ -47,7 +47,8 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 
 	let points = getPoints(svg) || [ getOrigin(svg) ];
 
-	const it = iter(svg, points, deltaGetters, frames, duration, interval);
+	const iterator = isPolygon(svg) ? iterators.polygon : iterators.standard;
+	const it = iterator(svg, points, deltaGetters, frames, duration, interval);
 
 	return new Promise((resolve, reject) => {
 
