@@ -14476,7 +14476,7 @@ var _point = __webpack_require__(414);
 var _require = __webpack_require__(75),
     compose = _require.compose;
 
-var _sin = Math.sin,
+var sin = Math.sin,
     cos = Math.cos,
     tan = Math.tan,
     asin = Math.asin,
@@ -14563,7 +14563,7 @@ var animate = exports.animate = function animate(svg, deltaGetters, duration) {
 	var frames = duration / interval;
 
 	deltaGetters = deltaGetters.map(function (getter) {
-		return getter(svg, duration, interval);
+		return getter(svg)(duration, interval);
 	});
 
 	var points = (0, _utils.getPoints)(svg) || [(0, _utils.getOrigin)(svg)];
@@ -14589,261 +14589,284 @@ var animate = exports.animate = function animate(svg, deltaGetters, duration) {
 var oscillate = exports.oscillate = function oscillate() {
 	var amplitude = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [0, 0];
 	var cycles = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [1, 1];
+	return function (svg) {
+		return (/*#__PURE__*/regeneratorRuntime.mark(function _callee(duration, interval) {
+				var sides, frames, framesPerCycle, thetaDelta, i, j;
+				return regeneratorRuntime.wrap(function _callee$(_context3) {
+					while (1) {
+						switch (_context3.prev = _context3.next) {
+							case 0:
+								sides = (0, _utils.getSides)(svg);
+								frames = duration / interval;
+								framesPerCycle = frames / cycles;
+								thetaDelta = 2 * _constants.PI / framesPerCycle;
+								i = -1;
 
+							case 5:
+								if (!(++i < frames)) {
+									_context3.next = 15;
+									break;
+								}
 
-	return (/*#__PURE__*/regeneratorRuntime.mark(function _callee(svg, duration, interval) {
-			var sides, frames, framesPerCycle, thetaDelta, i, j;
-			return regeneratorRuntime.wrap(function _callee$(_context3) {
-				while (1) {
-					switch (_context3.prev = _context3.next) {
-						case 0:
-							sides = (0, _utils.getSides)(svg);
-							frames = duration / interval;
-							framesPerCycle = frames / cycles;
-							thetaDelta = 2 * _constants.PI / framesPerCycle;
-							i = -1;
+								j = 0;
 
-						case 5:
-							if (!(++i < frames)) {
-								_context3.next = 15;
+							case 7:
+								if (!(j < sides)) {
+									_context3.next = 13;
+									break;
+								}
+
+								_context3.next = 10;
+								return [amplitude[0] * (sin((i + 1) * thetaDelta) - sin(i * thetaDelta)), amplitude[1] * (-cos((i + 1) * thetaDelta) + cos(i * thetaDelta))];
+
+							case 10:
+								j++;
+								_context3.next = 7;
 								break;
-							}
 
-							j = 0;
-
-						case 7:
-							if (!(j < sides)) {
-								_context3.next = 13;
+							case 13:
+								_context3.next = 5;
 								break;
-							}
 
-							_context3.next = 10;
-							return [amplitude[0] * (_sin((i + 1) * thetaDelta) - _sin(i * thetaDelta)), amplitude[1] * (-cos((i + 1) * thetaDelta) + cos(i * thetaDelta))];
-
-						case 10:
-							j++;
-							_context3.next = 7;
-							break;
-
-						case 13:
-							_context3.next = 5;
-							break;
-
-						case 15:
-						case 'end':
-							return _context3.stop();
+							case 15:
+							case 'end':
+								return _context3.stop();
+						}
 					}
-				}
-			}, _callee, this);
-		})
-	);
+				}, _callee, this);
+			})
+		);
+	};
 };
 
 var translate = exports.translate = function translate() {
 	var distance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [0, 0];
 	var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : LINEAR;
+	return function (svg) {
 
+		var frameDelta = function frameDelta(i, _ref, t) {
+			var _ref2 = _slicedToArray(_ref, 2),
+			    x = _ref2[0],
+			    y = _ref2[1];
 
-	var gen = {
-		linear: /*#__PURE__*/regeneratorRuntime.mark(function linear(svg, duration, interval) {
-			var sides, frames, delta, i, j;
-			return regeneratorRuntime.wrap(function linear$(_context4) {
-				while (1) {
-					switch (_context4.prev = _context4.next) {
-						case 0:
-							sides = (0, _utils.getSides)(svg);
-							frames = duration / interval;
-							delta = (0, _point.pointQuot)(distance, frames);
-							i = -1;
+			return [x * (sin((i + 1) * t) - sin(i * t)), y * (sin((i + 1) * t) - sin(i * t))];
+		};
 
-							if (!sides) {
-								_context4.next = 17;
-								break;
+		var gen = {
+			linear: {
+				standard: /*#__PURE__*/regeneratorRuntime.mark(function standard(duration, interval) {
+					var sides, frames, delta, i;
+					return regeneratorRuntime.wrap(function standard$(_context4) {
+						while (1) {
+							switch (_context4.prev = _context4.next) {
+								case 0:
+									sides = (0, _utils.getSides)(svg);
+									frames = duration / interval;
+									delta = (0, _point.pointQuot)(distance, frames);
+									i = -1;
+
+								case 4:
+									if (!(++i < frames)) {
+										_context4.next = 9;
+										break;
+									}
+
+									_context4.next = 7;
+									return delta;
+
+								case 7:
+									_context4.next = 4;
+									break;
+
+								case 9:
+								case 'end':
+									return _context4.stop();
 							}
+						}
+					}, standard, this);
+				}),
+				polygon: /*#__PURE__*/regeneratorRuntime.mark(function polygon(duration, interval) {
+					var sides, frames, delta, i, j;
+					return regeneratorRuntime.wrap(function polygon$(_context5) {
+						while (1) {
+							switch (_context5.prev = _context5.next) {
+								case 0:
+									sides = (0, _utils.getSides)(svg);
+									frames = duration / interval;
+									delta = (0, _point.pointQuot)(distance, frames);
+									i = -1;
 
-						case 5:
-							if (!(++i < frames)) {
-								_context4.next = 15;
-								break;
+								case 4:
+									if (!(++i < frames)) {
+										_context5.next = 14;
+										break;
+									}
+
+									j = 0;
+
+								case 6:
+									if (!(j < sides)) {
+										_context5.next = 12;
+										break;
+									}
+
+									_context5.next = 9;
+									return delta;
+
+								case 9:
+									j++;
+									_context5.next = 6;
+									break;
+
+								case 12:
+									_context5.next = 4;
+									break;
+
+								case 14:
+								case 'end':
+									return _context5.stop();
 							}
+						}
+					}, polygon, this);
+				})
+			},
+			sin: {
+				standard: /*#__PURE__*/regeneratorRuntime.mark(function standard(duration, interval) {
+					var sides, frames, thetaDelta, i;
+					return regeneratorRuntime.wrap(function standard$(_context6) {
+						while (1) {
+							switch (_context6.prev = _context6.next) {
+								case 0:
+									sides = (0, _utils.getSides)(svg);
+									frames = duration / interval;
+									thetaDelta = _constants.PI / (2 * frames);
+									i = -1;
 
-							j = 0;
+								case 4:
+									if (!(++i < frames)) {
+										_context6.next = 9;
+										break;
+									}
 
-						case 7:
-							if (!(j < sides)) {
-								_context4.next = 13;
-								break;
+									_context6.next = 7;
+									return frameDelta(i, distance, thetaDelta);
+
+								case 7:
+									_context6.next = 4;
+									break;
+
+								case 9:
+								case 'end':
+									return _context6.stop();
 							}
+						}
+					}, standard, this);
+				}),
+				polygon: /*#__PURE__*/regeneratorRuntime.mark(function polygon(duration, interval) {
+					var sides, frames, thetaDelta, i, j;
+					return regeneratorRuntime.wrap(function polygon$(_context7) {
+						while (1) {
+							switch (_context7.prev = _context7.next) {
+								case 0:
+									sides = (0, _utils.getSides)(svg);
+									frames = duration / interval;
+									thetaDelta = _constants.PI / (2 * frames);
+									i = -1;
 
-							_context4.next = 10;
-							return delta;
+								case 4:
+									if (!(++i < frames)) {
+										_context7.next = 14;
+										break;
+									}
 
-						case 10:
-							j++;
-							_context4.next = 7;
-							break;
+									j = 0;
 
-						case 13:
-							_context4.next = 5;
-							break;
+								case 6:
+									if (!(j < sides)) {
+										_context7.next = 12;
+										break;
+									}
 
-						case 15:
-							_context4.next = 22;
-							break;
+									_context7.next = 9;
+									return frameDelta(i, distance, thetaDelta);
 
-						case 17:
-							if (!(++i < frames)) {
-								_context4.next = 22;
-								break;
+								case 9:
+									j++;
+									_context7.next = 6;
+									break;
+
+								case 12:
+									_context7.next = 4;
+									break;
+
+								case 14:
+								case 'end':
+									return _context7.stop();
 							}
-
-							_context4.next = 20;
-							return delta;
-
-						case 20:
-							_context4.next = 17;
-							break;
-
-						case 22:
-						case 'end':
-							return _context4.stop();
-					}
-				}
-			}, linear, this);
-		}),
-		sin: /*#__PURE__*/regeneratorRuntime.mark(function sin(svg, duration, interval) {
-			var sides, frames, thetaDelta, frameDelta, i, j;
-			return regeneratorRuntime.wrap(function sin$(_context5) {
-				while (1) {
-					switch (_context5.prev = _context5.next) {
-						case 0:
-							sides = (0, _utils.getSides)(svg);
-							frames = duration / interval;
-							thetaDelta = _constants.PI / (2 * frames);
-
-							frameDelta = function frameDelta(i, _ref, t) {
-								var _ref2 = _slicedToArray(_ref, 2),
-								    x = _ref2[0],
-								    y = _ref2[1];
-
-								return [x * (_sin((i + 1) * t) - _sin(i * t)), y * (_sin((i + 1) * t) - _sin(i * t))];
-							};
-
-							i = -1;
-
-							if (!sides) {
-								_context5.next = 18;
-								break;
-							}
-
-						case 6:
-							if (!(++i < frames)) {
-								_context5.next = 16;
-								break;
-							}
-
-							j = 0;
-
-						case 8:
-							if (!(j < sides)) {
-								_context5.next = 14;
-								break;
-							}
-
-							_context5.next = 11;
-							return frameDelta(i, distance, thetaDelta);
-
-						case 11:
-							j++;
-							_context5.next = 8;
-							break;
-
-						case 14:
-							_context5.next = 6;
-							break;
-
-						case 16:
-							_context5.next = 23;
-							break;
-
-						case 18:
-							if (!(++i < frames)) {
-								_context5.next = 23;
-								break;
-							}
-
-							_context5.next = 21;
-							return frameDelta(i, distance, thetaDelta);
-
-						case 21:
-							_context5.next = 18;
-							break;
-
-						case 23:
-						case 'end':
-							return _context5.stop();
-					}
-				}
-			}, sin, this);
-		})
+						}
+					}, polygon, this);
+				})
+			}
+		};
+		return (0, _utils.isPolygon)(svg) ? gen[fn].polygon : gen[fn].standard;
 	};
-	return gen[fn];
 };
 
 var rotate = exports.rotate = function rotate(theta) {
+	return function (svg) {
+		return (/*#__PURE__*/regeneratorRuntime.mark(function _callee2(duration, interval) {
+				var points, sides, centroid, frames, delta, i, j, point, radius, t0, tc, tp;
+				return regeneratorRuntime.wrap(function _callee2$(_context8) {
+					while (1) {
+						switch (_context8.prev = _context8.next) {
+							case 0:
+								points = (0, _utils.getPoints)(svg);
+								sides = (0, _utils.getSides)(svg);
+								centroid = (0, _utils.getCentroid)(svg);
+								frames = duration / interval;
+								delta = theta / frames;
+								i = -1;
 
-	return (/*#__PURE__*/regeneratorRuntime.mark(function _callee2(svg, duration, interval) {
-			var points, sides, centroid, frames, delta, i, j, point, radius, t0, tc, tp;
-			return regeneratorRuntime.wrap(function _callee2$(_context6) {
-				while (1) {
-					switch (_context6.prev = _context6.next) {
-						case 0:
-							points = (0, _utils.getPoints)(svg);
-							sides = (0, _utils.getSides)(svg);
-							centroid = (0, _utils.getCentroid)(svg);
-							frames = duration / interval;
-							delta = theta / frames;
-							i = -1;
+							case 6:
+								if (!(++i < frames)) {
+									_context8.next = 21;
+									break;
+								}
 
-						case 6:
-							if (!(++i < frames)) {
-								_context6.next = 21;
+								j = 0;
+
+							case 8:
+								if (!(j < sides)) {
+									_context8.next = 19;
+									break;
+								}
+
+								point = points[j];
+								radius = (0, _point.segmentLength)(point, centroid);
+								t0 = compose(_polygon.getTheta, _point.pointDiff)(centroid, point);
+								tc = t0 + (i + 1) * delta;
+								tp = t0 + i * delta;
+								_context8.next = 16;
+								return [radius * (cos(tc) - cos(tp)), radius * (sin(tc) - sin(tp))];
+
+							case 16:
+								j++;
+								_context8.next = 8;
 								break;
-							}
 
-							j = 0;
-
-						case 8:
-							if (!(j < sides)) {
-								_context6.next = 19;
+							case 19:
+								_context8.next = 6;
 								break;
-							}
 
-							point = points[j];
-							radius = (0, _point.segmentLength)(point, centroid);
-							t0 = compose(_polygon.getTheta, _point.pointDiff)(centroid, point);
-							tc = t0 + (i + 1) * delta;
-							tp = t0 + i * delta;
-							_context6.next = 16;
-							return [radius * (cos(tc) - cos(tp)), radius * (_sin(tc) - _sin(tp))];
-
-						case 16:
-							j++;
-							_context6.next = 8;
-							break;
-
-						case 19:
-							_context6.next = 6;
-							break;
-
-						case 21:
-						case 'end':
-							return _context6.stop();
+							case 21:
+							case 'end':
+								return _context8.stop();
+						}
 					}
-				}
-			}, _callee2, this);
-		})
-	);
+				}, _callee2, this);
+			})
+		);
+	};
 };
 
 /***/ })

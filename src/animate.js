@@ -43,7 +43,7 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 
 	const frames = duration / interval;
 
-	deltaGetters = deltaGetters.map(getter => getter(svg, duration, interval));
+	deltaGetters = deltaGetters.map(getter => getter(svg)(duration, interval));
 
 	let points = getPoints(svg) || [ getOrigin(svg) ];
 
@@ -66,9 +66,8 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 	});
 };
 
-export const oscillate = (amplitude = [ 0, 0 ], cycles = [ 1, 1 ]) => {
-
-	return function* (svg, duration, interval) {
+export const oscillate = (amplitude = [ 0, 0 ], cycles = [ 1, 1 ]) =>
+	svg => function* (duration, interval) {
 
 		const sides = getSides(svg);
 		const frames = duration / interval;
@@ -85,81 +84,87 @@ export const oscillate = (amplitude = [ 0, 0 ], cycles = [ 1, 1 ]) => {
 			}
 		}
 	};
-};
 
-export const translate = (distance = [ 0, 0 ], fn = LINEAR) => {
+export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
+	
+	const frameDelta = (i, [ x, y ], t) => [
+		x * (sin((i + 1) * t) - sin(i * t)),
+		y * (sin((i + 1) * t) - sin(i * t))
+	];
 
 	const gen = {
-		*linear (svg, duration, interval) {
-			const sides = getSides(svg);
-			const frames = duration / interval;
-			const delta = pointQuot(distance, frames);
+		linear: {
+			*standard (duration, interval) {
+				const sides = getSides(svg);
+				const frames = duration / interval;
+				const delta = pointQuot(distance, frames);
 
-			let i = -1;
-			if (sides) {
+				let i = -1;
+				while (++i < frames) {
+					yield delta;
+				}
+			},
+			*polygon (duration, interval) {
+				const sides = getSides(svg);
+				const frames = duration / interval;
+				const delta = pointQuot(distance, frames);
+
+				let i = -1;
 				while (++i < frames) {
 					for (let j = 0; j < sides; j++) {
 						yield delta;
 					}
 				}
-			} else {
-				while (++i < frames) {
-					yield delta;
-				}
 			}
 		},
-		*sin (svg, duration, interval) {
-			const sides = getSides(svg);
-			const frames = duration / interval;
-			const thetaDelta = PI / (2 * frames);
+		sin: {
+			*standard (duration, interval) {
+				const sides = getSides(svg);
+				const frames = duration / interval;
+				const thetaDelta = PI / (2 * frames);
 
-			const frameDelta = (i, [ x, y ], t) => [
-				x * (sin((i + 1) * t) - sin(i * t)),
-				y * (sin((i + 1) * t) - sin(i * t))
-			];
+				let i = -1;
+				while (++i < frames) {
+					yield frameDelta(i, distance, thetaDelta);
+				}
+			},
+			*polygon (duration, interval) {
+				const sides = getSides(svg);
+				const frames = duration / interval;
+				const thetaDelta = PI / (2 * frames);
 
-			let i = -1;
-
-			if (sides) {
+				let i = -1;
 				while (++i < frames) {
 					for (let j = 0; j < sides; j++) {
 						yield frameDelta(i, distance, thetaDelta);
 					}
 				}
-			} else {
-				while (++i < frames) {
-					yield frameDelta(i, distance, thetaDelta);
-				}
 			}
 		}
 	};
-	return gen[fn];
+	return isPolygon(svg) ? gen[fn].polygon : gen[fn].standard;
 };
 
-export const rotate = theta => {
+export const rotate = theta => svg => function* (duration, interval) {
+	const points = getPoints(svg);
+	const sides = getSides(svg);
+	const centroid = getCentroid(svg);
+	const frames = duration / interval;
+	const delta = theta / frames;
 
-	return function* (svg, duration, interval) {
-
-		const points = getPoints(svg);
-		const sides = getSides(svg);
-		const centroid = getCentroid(svg);
-		const frames = duration / interval;
-		const delta = theta / frames;
-
-		let i = -1;
-		while (++i < frames) {
-			for (let j = 0; j < sides; j++) {
-				const point = points[j];
-				const radius = segmentLength(point, centroid);
-				const t0 = compose(getTheta, pointDiff)(centroid, point);
-				const tc = t0 + (i + 1) * delta;
-				const tp = t0 + i * delta;
-				
-				yield [
-					radius * (cos(tc) - cos(tp)),
-					radius * (sin(tc) - sin(tp))
-				];
-			}
+	let i = -1;
+	while (++i < frames) {
+		for (let j = 0; j < sides; j++) {
+			const point = points[j];
+			const radius = segmentLength(point, centroid);
+			const t0 = compose(getTheta, pointDiff)(centroid, point);
+			const tc = t0 + (i + 1) * delta;
+			const tp = t0 + i * delta;
+			
+			yield [
+				radius * (cos(tc) - cos(tp)),
+				radius * (sin(tc) - sin(tp))
+			];
 		}
-	};
+	}
 };
