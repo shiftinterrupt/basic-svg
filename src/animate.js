@@ -1,14 +1,12 @@
 const { compose } = require('ramda');
 
 import { PI } from './constants';
+import { setAttr, setOrigin } from './BasicSvg';
 import {
 	getOrigin,
-	getPoints,
-	getSides,
-	getCentroid,
 	isPolygon
 } from './utils';
-import { getTheta } from './polygon';
+import { getSides, getCentroid, getPoints, getTheta } from './polygon';
 import {
 	pointSum,
 	pointDiff,
@@ -27,14 +25,14 @@ const iterators = {
 		while (frames-- > 0) {
 			points = yield points;
 			points = applyDeltas(points, deltaGetters);
-			svg.origin(points[0]);
+			setOrigin(svg, points[0]);
 		}
 	},
 	*polygon (svg, points, deltaGetters, frames, duration, interval) {
 		while (frames-- > 0) {
 			points = yield points;
 			points = applyDeltas(points, deltaGetters);
-			svg.points(points);
+			setAttr(svg, 'points', points);
 		}
 	}
 };
@@ -45,20 +43,19 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 
 	deltaGetters = deltaGetters.map(getter => getter(svg)(duration, interval));
 
-	let points = getPoints(svg) || [ getOrigin(svg) ];
+	let points = isPolygon(svg) ? getPoints(svg) : [ getOrigin(svg) ];
 
 	const iterator = isPolygon(svg) ? iterators.polygon : iterators.standard;
-	const it = iterator(svg, points, deltaGetters, frames, duration, interval);
+	const iter = iterator(svg, points, deltaGetters, frames, duration, interval);
 
 	return new Promise((resolve, reject) => {
 
 		const id = setInterval(() => {
 
-			const next = it.next(points);
+			const next = iter.next(points);
 
 			if (next.done) {
-				clearInterval(id);
-				return resolve();
+				return resolve(clearInterval(id));
 			};
 			points = next.value;
 
@@ -69,14 +66,14 @@ export const animate = (svg, deltaGetters, duration, interval = 10) => {
 export const oscillate = (amplitude = [ 0, 0 ], cycles = [ 1, 1 ]) =>
 	svg => function* (duration, interval) {
 
-		const sides = getSides(svg);
+		const dims = isPolygon(svg) ? getSides(svg) : 1;
 		const frames = duration / interval;
 		const framesPerCycle = frames / cycles;
 		const thetaDelta = 2 * PI / framesPerCycle;
 
 		let i = -1;
 		while (++i < frames) {
-			for (let j = 0; j < sides; j++) {
+			for (let j = 0; j < dims; j++) {
 				yield [
 					amplitude[0] * (sin((i + 1) * thetaDelta) - sin(i * thetaDelta)),
 					amplitude[1] * (-cos((i + 1) * thetaDelta) + cos(i * thetaDelta))
@@ -91,7 +88,7 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 		x * (sin((i + 1) * t) - sin(i * t)),
 		y * (sin((i + 1) * t) - sin(i * t))
 	];
-	const sides = getSides(svg);
+	const dims = isPolygon(svg) ? getSides(svg) : 1;
 
 	const gen = {
 		linear: {
@@ -110,7 +107,7 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 
 				let i = -1;
 				while (++i < frames) {
-					for (let j = 0; j < sides; j++) {
+					for (let j = 0; j < dims; j++) {
 						yield delta;
 					}
 				}
@@ -132,7 +129,7 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 
 				let i = -1;
 				while (++i < frames) {
-					for (let j = 0; j < sides; j++) {
+					for (let j = 0; j < dims; j++) {
 						yield frameDelta(i, distance, thetaDelta);
 					}
 				}
@@ -143,15 +140,16 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 };
 
 export const rotate = theta => svg => function* (duration, interval) {
-	const points = getPoints(svg);
-	const sides = getSides(svg);
-	const centroid = getCentroid(svg);
+
+	const points = isPolygon(svg) ? getPoints(svg) : [ getOrigin(svg) ];
+	const dims = points.length;
+	const centroid = isPolygon(svg) ? getCentroid(svg) : getOrigin(svg);
 	const frames = duration / interval;
 	const delta = theta / frames;
 
 	let i = -1;
 	while (++i < frames) {
-		for (let j = 0; j < sides; j++) {
+		for (let j = 0; j < dims; j++) {
 			const point = points[j];
 			const radius = segmentLength(point, centroid);
 			const t0 = compose(getTheta, pointDiff)(centroid, point);

@@ -1,13 +1,13 @@
-import { SVG } from './constants';
+import { NS, SVG } from './constants';
 import BasicSvg from './BasicSvg';
-import { element } from './utils';
+import { element, createElement } from './utils';
 
 const Svg = selector => {
 	
 	const parentEl = document.querySelector(selector);
-	const svg = new BasicSvg(SVG);
+	const svg = createElement(NS, SVG);
 
-	parentEl.append(element(svg));
+	parentEl.append(svg);
 	
 	return svg;
 };

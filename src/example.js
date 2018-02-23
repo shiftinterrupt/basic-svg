@@ -1,56 +1,71 @@
 import Svg from './svg';
+import { create, append, createAndAppend } from './BasicSvg';
 import { PI, LINEAR, SIN } from './constants';
 import { animate, rotate, translate, oscillate } from './animate';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-	const svg = Svg('body').styles({
-		position: 'absolute',
-		width: '100%',
-		height: '100%'
-	});
+	const svg = Svg('body');
 
-	const circle = svg.append('circle', {
-		radius: 25,
-		origin: [ 900, 300 ]
-	}).styles({
-		fill: '#d2dee8'
-	});
+	const data = [
+		{
+			type: 'circle',
+			radius: 25,
+			origin: [ 900, 300 ],
+			styles: {
+				fill: '#d2dee8'
+			}
+		},
+		{
+			type: 'triangle',
+			origin: [ 900, 250 ],
+			radius: 20,
+			styles: {
+				fill: '#9392d1'
+			}
+		},
+		{
+			type: 'square',
+			origin: [ 900, 200 ],
+			radius: 25,
+			styles: {
+				fill: '#e1769f'
+			}
+		},
+		{
+			type: 'pentagon',
+			origin: [ 900, 150 ],
+			radius: 25,
+			styles: {
+				fill: '#bf9ac8'
+			}
+		},
+		{
+			type: 'hexagon',
+			origin: [ 900, 100 ],
+			radius: 25,
+			styles: {
+				fill: '#353573'
+			}
+		},
+		{
+			type: 'square',
+			origin: [ 100, 50 ],
+			radius: 20,
+			styles: {
+				fill: 'purple'
+			}
+		}
+	];
 
-	const triangle = svg.append('triangle', {
-		origin: [ 900, 250 ],
-		radius: 20
-	}).styles({
-		fill: '#9392d1'
-	});
-
-	const square = svg.append('square', {
-		origin: [ 900, 200 ],
-		radius: 25
-	}).styles({
-		fill: '#e1769f'
-	});
-
-	const pentagon = svg.append('pentagon', {
-		origin: [ 900, 150 ],
-		radius: 25
-	}).styles({
-		fill: '#bf9ac8'
-	});
-
-	const hexagon = svg.append('hexagon', {
-		origin: [ 900, 100 ],
-		radius: 25
-	}).styles({
-		fill: '#353573'
-	});
-	
-	const square2 = svg.append('square', {
-		origin: [ 100, 50 ],
-		radius: 20
-	}).styles({
-		fill: 'purple'
-	});
+	const [
+		circle,
+		triangle,
+		square,
+		pentagon,
+		hexagon,
+		square2
+	] = createAndAppend(svg, data);
 
 	setTimeout(() => {
 		animate(triangle, [

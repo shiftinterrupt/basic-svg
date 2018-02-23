@@ -13,11 +13,11 @@ export const stringifyPoints = arr => join(' ')(arr.map(stringifyPoint));
 export const createElement = (ns, name) => document.createElementNS(ns, name);
 export const element = prop(['el']);
 
-export const localName = svg => {
-	const parts = element(svg).localName.split(':');
+export const localName = el => {
+	const parts = el.localName.split(':');
 	return parts[parts.length - 1];
 }
-export const attr = (svg, attr) => element(svg).getAttribute(attr);
+export const attr = (el, attr) => el.getAttribute(attr);
 export const data = prop(['data']);
 export const getPoints = compose(getPolygonPoints, data);
 export const getSides = compose(getPolygonSides, data);

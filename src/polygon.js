@@ -1,5 +1,7 @@
 const { range } = require('ramda');
 
+import { attr } from './utils';
+import { pointDiff } from './point';
 import {
 	PI,
 	ORIENT_RADIUS,
@@ -54,8 +56,22 @@ const derivers = {
 
 const makeDeriver = (theta, def) => prop => derivers[prop].call(null, theta, def);
 
-export const getPoints = o => o.points;
-export const getSides = o => 'points' in o ? o.points.length : 0;
+export const getSides = el => {
+	const pointsAttr = attr(el, 'points');
+	return pointsAttr ? pointsAttr.split(' ').length : 0;
+}
+
+export const pointsFromStr = str => str.split(' ').map(pointStr => {
+	const point = pointStr.split(',');
+	return [ +point[0], +point[1] ];
+});
+
+export const getPoints = el => pointsFromStr(attr(el, 'points'));
+
+export const resetOrigin = (points, origin) => {
+	const diff = pointDiff(getCentroid(points), origin);
+	return points.map(point => pointSum(point, diff));
+};
 
 export const RegularPolygon = ({
 	sides,
@@ -83,19 +99,15 @@ export const RegularPolygon = ({
 
 	radius = radius || derive('radius');
 
-	return Polygon(range(0, sides).map(i => [
+	return range(0, sides).map(i => [
 		origin[0] + radius * cos((i * 2 * theta) + rotate),
 		origin[1] + radius * sin((i * 2 * theta) + rotate)
-	]));
+	]);
 };
-
-export const Polygon = points => ({
-	points
-});
 
 const nextPoint = (i, points) => points[i + 1] || points[0];
 
-export const getArea = poly => (1 / 2) * getPoints(poly).reduce((dblArea, [ x, y ], i, points) => {
+export const getArea = points => (1 / 2) * points.reduce((dblArea, [ x, y ], i, points) => {
 
 	const [ x1, y1 ] = nextPoint(i, points);
 
@@ -103,10 +115,10 @@ export const getArea = poly => (1 / 2) * getPoints(poly).reduce((dblArea, [ x, y
 
 }, 0);
 
-export const getCentroid = poly => {
+export const getCentroid = el => {
 
-	const areaK = 1 / (6 * getArea(poly));
-	const points = getPoints(poly);
+	const points = pointsFromStr(attr(el, 'points'));
+	const areaK = 1 / (6 * getArea(points));
 
 	const nextX = ([ x, y ], [ x1, y1 ]) => (x + x1) * (x * y1 - x1 * y);
 	const nextY = ([ x, y ], [ x1, y1 ]) => (y + y1) * (x * y1 - x1 * y);
