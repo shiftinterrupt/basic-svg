@@ -14651,34 +14651,34 @@ var translate = exports.translate = function translate() {
 
 			return [x * (sin((i + 1) * t) - sin(i * t)), y * (sin((i + 1) * t) - sin(i * t))];
 		};
+		var sides = (0, _utils.getSides)(svg);
 
 		var gen = {
 			linear: {
 				standard: /*#__PURE__*/regeneratorRuntime.mark(function standard(duration, interval) {
-					var sides, frames, delta, i;
+					var frames, delta, i;
 					return regeneratorRuntime.wrap(function standard$(_context4) {
 						while (1) {
 							switch (_context4.prev = _context4.next) {
 								case 0:
-									sides = (0, _utils.getSides)(svg);
 									frames = duration / interval;
 									delta = (0, _point.pointQuot)(distance, frames);
 									i = -1;
 
-								case 4:
+								case 3:
 									if (!(++i < frames)) {
-										_context4.next = 9;
+										_context4.next = 8;
 										break;
 									}
 
-									_context4.next = 7;
+									_context4.next = 6;
 									return delta;
 
-								case 7:
-									_context4.next = 4;
+								case 6:
+									_context4.next = 3;
 									break;
 
-								case 9:
+								case 8:
 								case 'end':
 									return _context4.stop();
 							}
@@ -14686,43 +14686,42 @@ var translate = exports.translate = function translate() {
 					}, standard, this);
 				}),
 				polygon: /*#__PURE__*/regeneratorRuntime.mark(function polygon(duration, interval) {
-					var sides, frames, delta, i, j;
+					var frames, delta, i, j;
 					return regeneratorRuntime.wrap(function polygon$(_context5) {
 						while (1) {
 							switch (_context5.prev = _context5.next) {
 								case 0:
-									sides = (0, _utils.getSides)(svg);
 									frames = duration / interval;
 									delta = (0, _point.pointQuot)(distance, frames);
 									i = -1;
 
-								case 4:
+								case 3:
 									if (!(++i < frames)) {
-										_context5.next = 14;
+										_context5.next = 13;
 										break;
 									}
 
 									j = 0;
 
-								case 6:
+								case 5:
 									if (!(j < sides)) {
-										_context5.next = 12;
+										_context5.next = 11;
 										break;
 									}
 
-									_context5.next = 9;
+									_context5.next = 8;
 									return delta;
 
-								case 9:
+								case 8:
 									j++;
-									_context5.next = 6;
+									_context5.next = 5;
 									break;
 
-								case 12:
-									_context5.next = 4;
+								case 11:
+									_context5.next = 3;
 									break;
 
-								case 14:
+								case 13:
 								case 'end':
 									return _context5.stop();
 							}
@@ -14732,30 +14731,29 @@ var translate = exports.translate = function translate() {
 			},
 			sin: {
 				standard: /*#__PURE__*/regeneratorRuntime.mark(function standard(duration, interval) {
-					var sides, frames, thetaDelta, i;
+					var frames, thetaDelta, i;
 					return regeneratorRuntime.wrap(function standard$(_context6) {
 						while (1) {
 							switch (_context6.prev = _context6.next) {
 								case 0:
-									sides = (0, _utils.getSides)(svg);
 									frames = duration / interval;
 									thetaDelta = _constants.PI / (2 * frames);
 									i = -1;
 
-								case 4:
+								case 3:
 									if (!(++i < frames)) {
-										_context6.next = 9;
+										_context6.next = 8;
 										break;
 									}
 
-									_context6.next = 7;
+									_context6.next = 6;
 									return frameDelta(i, distance, thetaDelta);
 
-								case 7:
-									_context6.next = 4;
+								case 6:
+									_context6.next = 3;
 									break;
 
-								case 9:
+								case 8:
 								case 'end':
 									return _context6.stop();
 							}
@@ -14763,43 +14761,42 @@ var translate = exports.translate = function translate() {
 					}, standard, this);
 				}),
 				polygon: /*#__PURE__*/regeneratorRuntime.mark(function polygon(duration, interval) {
-					var sides, frames, thetaDelta, i, j;
+					var frames, thetaDelta, i, j;
 					return regeneratorRuntime.wrap(function polygon$(_context7) {
 						while (1) {
 							switch (_context7.prev = _context7.next) {
 								case 0:
-									sides = (0, _utils.getSides)(svg);
 									frames = duration / interval;
 									thetaDelta = _constants.PI / (2 * frames);
 									i = -1;
 
-								case 4:
+								case 3:
 									if (!(++i < frames)) {
-										_context7.next = 14;
+										_context7.next = 13;
 										break;
 									}
 
 									j = 0;
 
-								case 6:
+								case 5:
 									if (!(j < sides)) {
-										_context7.next = 12;
+										_context7.next = 11;
 										break;
 									}
 
-									_context7.next = 9;
+									_context7.next = 8;
 									return frameDelta(i, distance, thetaDelta);
 
-								case 9:
+								case 8:
 									j++;
-									_context7.next = 6;
+									_context7.next = 5;
 									break;
 
-								case 12:
-									_context7.next = 4;
+								case 11:
+									_context7.next = 3;
 									break;
 
-								case 14:
+								case 13:
 								case 'end':
 									return _context7.stop();
 							}

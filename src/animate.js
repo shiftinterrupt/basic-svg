@@ -91,11 +91,11 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 		x * (sin((i + 1) * t) - sin(i * t)),
 		y * (sin((i + 1) * t) - sin(i * t))
 	];
+	const sides = getSides(svg);
 
 	const gen = {
 		linear: {
 			*standard (duration, interval) {
-				const sides = getSides(svg);
 				const frames = duration / interval;
 				const delta = pointQuot(distance, frames);
 
@@ -105,7 +105,6 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 				}
 			},
 			*polygon (duration, interval) {
-				const sides = getSides(svg);
 				const frames = duration / interval;
 				const delta = pointQuot(distance, frames);
 
@@ -119,7 +118,6 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 		},
 		sin: {
 			*standard (duration, interval) {
-				const sides = getSides(svg);
 				const frames = duration / interval;
 				const thetaDelta = PI / (2 * frames);
 
@@ -129,7 +127,6 @@ export const translate = (distance = [ 0, 0 ], fn = LINEAR) => svg => {
 				}
 			},
 			*polygon (duration, interval) {
-				const sides = getSides(svg);
 				const frames = duration / interval;
 				const thetaDelta = PI / (2 * frames);
 
