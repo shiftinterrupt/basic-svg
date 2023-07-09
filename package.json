@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anomaaly/basic-svg.git"
+    "url": "git+https://github.com/shiftinterrupt/basic-svg.git"
   },
   "keywords": [
     "svg",
@@ -17,12 +17,12 @@
     "coroutines",
     "trig"
   ],
-  "author": "anomaaly",
+  "author": "shiftinterrupt",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/anomaaly/basic-svg/issues"
+    "url": "https://github.com/shiftinterrupt/basic-svg/issues"
   },
-  "homepage": "https://github.com/anomaaly/basic-svg#readme",
+  "homepage": "https://github.com/shiftinterrupt/basic-svg#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
